@@ -1,2 +1,0 @@
-hello full-page!
-It's dummy.txt
