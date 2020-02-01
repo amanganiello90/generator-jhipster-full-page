@@ -2,7 +2,7 @@
 
 [![NPM version][npm-image]][npm-url] [![Build Status][github-actions-image]][github-actions-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
-> JHipster module, JHipster module that creates a full page with client and/or server side, using data from/to server, custom form and tables.
+> JHipster module, that creates a full page with client and/or server side, using data from/to server, custom form and tables.
 
 # Introduction
 
