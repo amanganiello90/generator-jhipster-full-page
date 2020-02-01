@@ -2,7 +2,18 @@
 
 [![NPM version][npm-image]][npm-url] [![Build Status][github-actions-image]][github-actions-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
+> ## 🛠 Mode: In Development
+
 > JHipster module, that creates a full page with client and/or server side, using data from/to server, custom form and tables.
+
+# TO DO
+
+My idea is to mock the jhipster entity generator to choose two type of pages:
+
+- Form page with delete and save buttons
+- Table page to view data with read button on every line
+
+> The page must be taken from entity-client and entity-server generators but without repository. The dto with fields are generated, and there will be the route of page not under entities element.
 
 # Introduction
 

@@ -103,16 +103,10 @@ module.exports = class extends BaseGenerator {
         this.log('------\n');
 
         if (this.clientFramework === 'react') {
-            this.template('dummy.txt', 'dummy-react.txt');
+            //  this.template('dummy.txt', 'dummy-react.txt');
         }
         if (this.clientFramework === 'angularX') {
-            this.template('dummy.txt', 'dummy-angularX.txt');
-        }
-        if (this.buildTool === 'maven') {
-            this.template('dummy.txt', 'dummy-maven.txt');
-        }
-        if (this.buildTool === 'gradle') {
-            this.template('dummy.txt', 'dummy-gradle.txt');
+            //   this.template('dummy.txt', 'dummy-angularX.txt');
         }
     }
 
