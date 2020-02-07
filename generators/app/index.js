@@ -10,7 +10,7 @@ module.exports = class extends BaseGenerator {
             init(args) {
                 if (args === 'default') {
                     // do something when argument is 'default'
-                    this.message = 'default message';
+                    this.pageType = 'table';
                 }
             },
             readConfig() {
@@ -44,17 +44,26 @@ module.exports = class extends BaseGenerator {
     prompting() {
         const prompts = [
             {
-                when: () => typeof this.message === 'undefined',
-                type: 'input',
-                name: 'message',
-                message: 'Please put something',
-                default: 'hello world!'
+                type: 'list',
+                name: 'pageType',
+                message: 'What kind of page do you want to create?',
+                choices: [
+                    {
+                        value: 'table',
+                        name: 'Table page'
+                    },
+                    {
+                        value: 'form',
+                        name: 'Form page'
+                    }
+                ],
+                default: 0
             }
         ];
 
         const done = this.async();
         this.prompt(prompts).then(answers => {
-            this.promptAnswers = answers;
+            this.pageType = answers.pageType;
             // To access props answers use this.promptAnswers.someOption;
             done();
         });
@@ -77,11 +86,6 @@ module.exports = class extends BaseGenerator {
         const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
         const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
-        // variable from questions
-        if (typeof this.message === 'undefined') {
-            this.message = this.promptAnswers.message;
-        }
-
         // show all variables
         this.log('\n--- some config read from config ---');
         this.log(`baseName=${this.baseName}`);
@@ -99,7 +103,6 @@ module.exports = class extends BaseGenerator {
         this.log(`webappDir=${webappDir}`);
 
         this.log('\n--- variables from questions ---');
-        this.log(`message=${this.message}`);
         this.log('------\n');
 
         if (this.clientFramework === 'react') {

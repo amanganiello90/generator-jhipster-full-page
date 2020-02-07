@@ -62,7 +62,7 @@
   "lint-staged": {
     "*.{js,json,yml,md}": [
       "prettier --write",
-      "git add"
+      "git add ."
     ]
   },
   "license": "Apache-2.0",
