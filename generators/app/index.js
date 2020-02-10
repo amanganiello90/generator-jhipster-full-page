@@ -23,6 +23,13 @@ module.exports = class extends BaseGenerator {
                 if (!this.jhipsterAppConfig) {
                     this.error('Cannot read .yo-rc.json');
                 }
+            },
+            setSkipEntityValues() {
+                this.jhipsterAppConfig.skipDbChangelog = true;
+                this.jhipsterAppConfig.enableHibernateCache = false;
+                this.jhipsterAppConfig.skipFakeData = true;
+            },
+            setConfig() {
                 // set every property from config
                 Object.keys(this.jhipsterAppConfig).forEach(prop => {
                     this[prop] = this.jhipsterAppConfig[prop];
