@@ -15,7 +15,7 @@ describe('JHipster generator full-page', () => {
                     testmode: true
                 })
                 .withPrompts({
-                    message: 'simple message to say hello'
+                    fieldAdd: false
                 })
                 .on('end', done);
         });
@@ -36,7 +36,7 @@ describe('JHipster generator full-page', () => {
                     testmode: true
                 })
                 .withPrompts({
-                    message: 'simple message to say hello'
+                    fieldAdd: false
                 })
                 .on('end', done);
         });
