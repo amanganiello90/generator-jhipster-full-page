@@ -2,10 +2,15 @@ const chalk = require('chalk');
 const _ = require('lodash');
 // eslint-disable-next-line
 const jhiCore = require('jhipster-core');
+// const path = require('path');
 const semver = require('semver');
 const BaseGenerator = require('generator-jhipster/generators/generator-base');
 const jhipsterConstants = require('generator-jhipster/generators/generator-constants');
 const jhipsterEntityPrompt = require('generator-jhipster/generators/entity/prompts');
+/*
+const jhipsterEntityServerFiles = require('generator-jhipster/generators/entity-server/files').serverFiles;
+const jhipsterEntityServerTemplatesPath = path.join(path.dirname(require.resolve('generator-jhipster/generators/entity-server')),'templates');
+*/
 const packagejs = require('../../package.json');
 
 module.exports = class extends BaseGenerator {
@@ -23,17 +28,6 @@ module.exports = class extends BaseGenerator {
                 if (!this.jhipsterAppConfig) {
                     this.error('Cannot read .yo-rc.json');
                 }
-            },
-            setSkipEntityValues() {
-                this.jhipsterAppConfig.skipDbChangelog = true;
-                this.jhipsterAppConfig.enableHibernateCache = false;
-                this.jhipsterAppConfig.skipFakeData = true;
-            },
-            setConfig() {
-                // set every property from config
-                Object.keys(this.jhipsterAppConfig).forEach(prop => {
-                    this[prop] = this.jhipsterAppConfig[prop];
-                });
             },
             displayLogo() {
                 // it's here to show that you can use functions from generator-jhipster
@@ -121,6 +115,11 @@ module.exports = class extends BaseGenerator {
                     ...this.jhipsterAppConfig
                 };
                 jhipsterEntityPrompt.askForFields.call(this);
+
+                // set every property from context
+                Object.keys(this.context).forEach(prop => {
+                    this[prop] = this.context[prop];
+                });
             }
         };
     }
@@ -155,7 +154,7 @@ module.exports = class extends BaseGenerator {
         this.log('\n--- variables from questions ---');
         this.log('------\n');
 
-        // I have to add writing phase inheriting from jhipster
+        // this.writeFilesToDisk(jhipsterEntityServerFiles, this, false, jhipsterEntityServerTemplatesPath);
 
         if (this.clientFramework === 'react') {
             //  this.template('dummy.txt', 'dummy-react.txt');
