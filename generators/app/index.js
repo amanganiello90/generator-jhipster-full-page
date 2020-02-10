@@ -1,16 +1,21 @@
 const chalk = require('chalk');
+const _ = require('lodash');
+// eslint-disable-next-line
+const jhiCore = require('jhipster-core');
 const semver = require('semver');
 const BaseGenerator = require('generator-jhipster/generators/generator-base');
 const jhipsterConstants = require('generator-jhipster/generators/generator-constants');
+const jhipsterEntityPrompt = require('generator-jhipster/generators/entity/prompts');
 const packagejs = require('../../package.json');
 
 module.exports = class extends BaseGenerator {
     get initializing() {
         return {
             init(args) {
-                if (args === 'default') {
-                    // do something when argument is 'default'
-                    this.pageType = 'table';
+                if (args === 'tablePage' || args === 'formPage') {
+                    // do something when argument
+                    this.pageName = args;
+                    this.pageType = args;
                 }
             },
             readConfig() {
@@ -18,6 +23,10 @@ module.exports = class extends BaseGenerator {
                 if (!this.jhipsterAppConfig) {
                     this.error('Cannot read .yo-rc.json');
                 }
+                // set every property from config
+                Object.keys(this.jhipsterAppConfig).forEach(prop => {
+                    this[prop] = this.jhipsterAppConfig[prop];
+                });
             },
             displayLogo() {
                 // it's here to show that you can use functions from generator-jhipster
@@ -41,42 +50,76 @@ module.exports = class extends BaseGenerator {
         };
     }
 
-    prompting() {
-        const prompts = [
-            {
-                type: 'list',
-                name: 'pageType',
-                message: 'What kind of page do you want to create?',
-                choices: [
+    get prompting() {
+        return {
+            customPrompt() {
+                const prompts = [
                     {
-                        value: 'table',
-                        name: 'Table page'
+                        type: 'input',
+                        name: 'pageName',
+                        message: 'What is the name of your page?',
+                        default: 'examplePage',
+                        validate: input => {
+                            if (!/^([a-zA-Z0-9_]*)$/.test(input)) {
+                                return 'The page name cannot contain special characters';
+                            }
+                            if (/^[0-9].*$/.test(input)) {
+                                return 'The page name cannot start with a number';
+                            }
+                            if (input === '') {
+                                return 'The page name cannot be empty';
+                            }
+                            if (input.indexOf('Detail', input.length - 'Detail'.length) !== -1) {
+                                return 'The page name cannot end with Detail';
+                            }
+                            if (!this.jhipsterAppConfig.skipServer && jhiCore.isReservedClassName(input)) {
+                                return 'The page name cannot contain a Java or JHipster reserved keyword';
+                            }
+                            return true;
+                        }
                     },
                     {
-                        value: 'form',
-                        name: 'Form page'
+                        type: 'list',
+                        name: 'pageType',
+                        message: 'What kind of page do you want to create?',
+                        choices: [
+                            {
+                                value: 'table',
+                                name: 'Table page'
+                            },
+                            {
+                                value: 'form',
+                                name: 'Form page'
+                            }
+                        ],
+                        default: 0
                     }
-                ],
-                default: 0
-            }
-        ];
+                ];
 
-        const done = this.async();
-        this.prompt(prompts).then(answers => {
-            this.pageType = answers.pageType;
-            // To access props answers use this.promptAnswers.someOption;
-            done();
-        });
+                const done = this.async();
+
+                this.prompt(prompts).then(answers => {
+                    this.pageName = answers.pageName;
+                    this.pageType = answers.pageType;
+                    // To access props answers use this.promptAnswers.someOption;
+                    done();
+                });
+            },
+            defaultJhipsterEntityPrompt() {
+                this.context = {
+                    fields: [],
+                    relationships: [],
+                    fieldNamesUnderscored: [],
+                    entityNameCapitalized: _.upperFirst(this.pageName),
+                    ...this.jhipsterAppConfig
+                };
+                jhipsterEntityPrompt.askForFields.call(this);
+            }
+        };
     }
 
     writing() {
         // read config from .yo-rc.json
-        this.baseName = this.jhipsterAppConfig.baseName;
-        this.packageName = this.jhipsterAppConfig.packageName;
-        this.packageFolder = this.jhipsterAppConfig.packageFolder;
-        this.clientFramework = this.jhipsterAppConfig.clientFramework;
-        this.clientPackageManager = this.jhipsterAppConfig.clientPackageManager;
-        this.buildTool = this.jhipsterAppConfig.buildTool;
 
         // use function in generator-base.js from generator-jhipster
         this.angularAppName = this.getAngularAppName();
@@ -104,6 +147,8 @@ module.exports = class extends BaseGenerator {
 
         this.log('\n--- variables from questions ---');
         this.log('------\n');
+
+        // I have to add writing phase inheriting from jhipster
 
         if (this.clientFramework === 'react') {
             //  this.template('dummy.txt', 'dummy-react.txt');

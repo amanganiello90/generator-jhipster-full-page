@@ -37,7 +37,7 @@ jobs:
       - name: Generate project
         run: |
           jhipster --with-entities --no-insight
-          yo jhipster-full-page default --force
+          yo jhipster-full-page tablePage --force
         working-directory: ./test/templates/${{ matrix.sample }}
       - name: Run integration-tests
         run: |
