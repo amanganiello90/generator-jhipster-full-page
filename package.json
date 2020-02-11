@@ -31,12 +31,14 @@
     "yeoman-generator": "4.4.0"
   },
   "devDependencies": {
+    "ejs-lint": "1.0.1",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-config-prettier": "6.9.0",
     "eslint-plugin-import": "2.19.1",
     "eslint-plugin-prettier": "3.1.2",
     "fs-extra": "8.1.0",
+    "glob": "7.1.6",
     "husky": "3.1.0",
     "lint-staged": "9.5.0",
     "mocha": "6.2.2",
@@ -45,9 +47,10 @@
     "yeoman-test": "2.0.0"
   },
   "scripts": {
+    "ejs-lint": "mocha test test/ejslint.js",
     "prettier:format": "prettier --write \"{,**/}*.{js,json,md,yml}\"",
-    "pretest": "eslint .",
-    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "lint": "eslint . && npm run ejs-lint",
     "lint-fix": "eslint . --fix",
     "release": "git push && git push --tags && npm publish",
     "release:patch": "npm version patch -a -m \"Update to %s\" && npm run release",
@@ -63,6 +66,7 @@
   "lint-staged": {
     "*.{js,json,yml,md}": [
       "prettier --write",
+      "npm run lint",
       "git add ."
     ]
   },
