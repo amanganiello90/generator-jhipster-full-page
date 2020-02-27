@@ -1,5 +1,6 @@
 const chalk = require('chalk');
 const _ = require('lodash');
+const pluralize = require('pluralize');
 // eslint-disable-next-line
 const jhiCore = require('jhipster-core');
 // const path = require('path');
@@ -11,7 +12,8 @@ const jhipsterEntityPrompt = require('generator-jhipster/generators/entity/promp
 const jhipsterEntityServerFiles = require('generator-jhipster/generators/entity-server/files').serverFiles;
 const jhipsterEntityServerTemplatesPath = path.join(path.dirname(require.resolve('generator-jhipster/generators/entity-server')),'templates');
 */
-const writeFiles = require('./files').writeFiles;
+
+// const files = require('./files');
 const packagejs = require('../../package.json');
 
 module.exports = class extends BaseGenerator {
@@ -29,9 +31,6 @@ module.exports = class extends BaseGenerator {
                 if (!this.jhipsterAppConfig) {
                     this.error('Cannot read .yo-rc.json');
                 }
-            },
-            setConfigModuleValues() {
-                this.jhipsterAppConfig.dto = 'mapstruct';
             },
             displayLogo() {
                 // it's here to show that you can use functions from generator-jhipster
@@ -128,53 +127,83 @@ module.exports = class extends BaseGenerator {
         };
     }
 
-    get writing() {
+    get configuring() {
         return {
-            defaultConfig() {
-                // read config from .yo-rc.json
+            setConfigModuleValues() {
+                this.dto = 'mapstruct';
+                this.service = 'yes';
 
-                // use function in generator-base.js from generator-jhipster
-                this.angularAppName = this.getAngularAppName();
+                this.saveUserSnapshot = false;
+                this.jpaMetamodelFiltering = false;
+                this.pagination = 'no';
+                this.reactiveRepositories = false;
 
-                // use constants from generator-constants.js
-                const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
-                const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
-                const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
+                this.fieldsContainNoOwnerOneToOne = false;
+                this.fieldsContainOwnerManyToMany = false;
 
-                // show all variables
-                this.log('\n--- some config read from config ---');
-                this.log(`baseName=${this.baseName}`);
-                this.log(`packageName=${this.packageName}`);
-                this.log(`clientFramework=${this.clientFramework}`);
-                this.log(`clientPackageManager=${this.clientPackageManager}`);
-                this.log(`buildTool=${this.buildTool}`);
+                this.clientRootFolder = this.baseName;
+                this.skipUiGrouping = false;
 
-                this.log('\n--- some function ---');
-                this.log(`angularAppName=${this.angularAppName}`);
+                // entity settings
+                this.pkType = this.getPkType(this.databaseType);
+                this.entityName = this.pageName;
+                this.entityInstance = _.lowerFirst(this.entityName);
+                this.entityInstancePlural = pluralize(this.entityInstance);
+                this.entityClass = this.entityNameCapitalized;
+                this.entityClassPlural = pluralize(this.entityClass);
+                this.entityApiUrl = _.kebabCase(pluralize(this.entityName));
 
-                this.log('\n--- some const ---');
-                this.log(`javaDir=${javaDir}`);
-                this.log(`resourceDir=${resourceDir}`);
-                this.log(`webappDir=${webappDir}`);
-
-                this.log('\n--- variables from questions ---');
-                this.log('------\n');
-
-                if (this.clientFramework === 'react') {
-                    //  this.template('dummy.txt', 'dummy-react.txt');
-                }
-                if (this.clientFramework === 'angularX') {
-                    //   this.template('dummy.txt', 'dummy-angularX.txt');
-                }
-            },
-            writePhase() {
-                // write files
-                return writeFiles();
+                // to get from prompt: readOnly only for table
+                this.validation = false;
+                this.readOnly = false;
             }
         };
     }
 
+    writing() {
+        // read config from .yo-rc.json
+
+        // use function in generator-base.js from generator-jhipster
+        this.angularAppName = this.getAngularAppName();
+
+        // use constants from generator-constants.js
+        const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
+        const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
+        const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
+
+        // show all variables
+        this.log('\n--- some config read from config ---');
+        this.log(`baseName=${this.baseName}`);
+        this.log(`packageName=${this.packageName}`);
+        this.log(`clientFramework=${this.clientFramework}`);
+        this.log(`clientPackageManager=${this.clientPackageManager}`);
+        this.log(`buildTool=${this.buildTool}`);
+
+        this.log('\n--- some function ---');
+        this.log(`angularAppName=${this.angularAppName}`);
+
+        this.log('\n--- some const ---');
+        this.log(`javaDir=${javaDir}`);
+        this.log(`resourceDir=${resourceDir}`);
+        this.log(`webappDir=${webappDir}`);
+
+        this.log('\n--- variables from questions ---');
+        this.log('------\n');
+
+        // write server files
+        // files.writeServerFiles.call(this);
+        // files.writeEnumServerFiles.call(this);
+
+        if (this.clientFramework === 'react') {
+            //  this.template('dummy.txt', 'dummy-react.txt');
+        }
+        if (this.clientFramework === 'angularX') {
+            //   this.template('dummy.txt', 'dummy-angularX.txt');
+        }
+    }
+
     install() {
+        /*
         const logMsg = `To install your dependencies manually, run: ${chalk.yellow.bold(`${this.clientPackageManager} install`)}`;
 
         const injectDependenciesAndConstants = err => {
@@ -194,6 +223,7 @@ module.exports = class extends BaseGenerator {
         } else {
             this.installDependencies(installConfig);
         }
+        */
     }
 
     end() {
