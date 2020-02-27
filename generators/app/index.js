@@ -11,6 +11,7 @@ const jhipsterEntityPrompt = require('generator-jhipster/generators/entity/promp
 const jhipsterEntityServerFiles = require('generator-jhipster/generators/entity-server/files').serverFiles;
 const jhipsterEntityServerTemplatesPath = path.join(path.dirname(require.resolve('generator-jhipster/generators/entity-server')),'templates');
 */
+const writeFiles = require('./files').writeFiles;
 const packagejs = require('../../package.json');
 
 module.exports = class extends BaseGenerator {
@@ -28,6 +29,9 @@ module.exports = class extends BaseGenerator {
                 if (!this.jhipsterAppConfig) {
                     this.error('Cannot read .yo-rc.json');
                 }
+            },
+            setConfigModuleValues() {
+                this.jhipsterAppConfig.dto = 'mapstruct';
             },
             displayLogo() {
                 // it's here to show that you can use functions from generator-jhipster
@@ -124,44 +128,50 @@ module.exports = class extends BaseGenerator {
         };
     }
 
-    writing() {
-        // read config from .yo-rc.json
+    get writing() {
+        return {
+            defaultConfig() {
+                // read config from .yo-rc.json
 
-        // use function in generator-base.js from generator-jhipster
-        this.angularAppName = this.getAngularAppName();
+                // use function in generator-base.js from generator-jhipster
+                this.angularAppName = this.getAngularAppName();
 
-        // use constants from generator-constants.js
-        const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
-        const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
-        const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
+                // use constants from generator-constants.js
+                const javaDir = `${jhipsterConstants.SERVER_MAIN_SRC_DIR + this.packageFolder}/`;
+                const resourceDir = jhipsterConstants.SERVER_MAIN_RES_DIR;
+                const webappDir = jhipsterConstants.CLIENT_MAIN_SRC_DIR;
 
-        // show all variables
-        this.log('\n--- some config read from config ---');
-        this.log(`baseName=${this.baseName}`);
-        this.log(`packageName=${this.packageName}`);
-        this.log(`clientFramework=${this.clientFramework}`);
-        this.log(`clientPackageManager=${this.clientPackageManager}`);
-        this.log(`buildTool=${this.buildTool}`);
+                // show all variables
+                this.log('\n--- some config read from config ---');
+                this.log(`baseName=${this.baseName}`);
+                this.log(`packageName=${this.packageName}`);
+                this.log(`clientFramework=${this.clientFramework}`);
+                this.log(`clientPackageManager=${this.clientPackageManager}`);
+                this.log(`buildTool=${this.buildTool}`);
 
-        this.log('\n--- some function ---');
-        this.log(`angularAppName=${this.angularAppName}`);
+                this.log('\n--- some function ---');
+                this.log(`angularAppName=${this.angularAppName}`);
 
-        this.log('\n--- some const ---');
-        this.log(`javaDir=${javaDir}`);
-        this.log(`resourceDir=${resourceDir}`);
-        this.log(`webappDir=${webappDir}`);
+                this.log('\n--- some const ---');
+                this.log(`javaDir=${javaDir}`);
+                this.log(`resourceDir=${resourceDir}`);
+                this.log(`webappDir=${webappDir}`);
 
-        this.log('\n--- variables from questions ---');
-        this.log('------\n');
+                this.log('\n--- variables from questions ---');
+                this.log('------\n');
 
-        // this.writeFilesToDisk(jhipsterEntityServerFiles, this, false, jhipsterEntityServerTemplatesPath);
-
-        if (this.clientFramework === 'react') {
-            //  this.template('dummy.txt', 'dummy-react.txt');
-        }
-        if (this.clientFramework === 'angularX') {
-            //   this.template('dummy.txt', 'dummy-angularX.txt');
-        }
+                if (this.clientFramework === 'react') {
+                    //  this.template('dummy.txt', 'dummy-react.txt');
+                }
+                if (this.clientFramework === 'angularX') {
+                    //   this.template('dummy.txt', 'dummy-angularX.txt');
+                }
+            },
+            writePhase() {
+                // write files
+                return writeFiles();
+            }
+        };
     }
 
     install() {
